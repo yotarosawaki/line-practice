@@ -1,0 +1,827 @@
+<title>仮交際LINE練習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+/* Layout: one phone-width column. Start → chat (pinned full height, choices docked at bottom) → report. */
+:root{
+  --paper:#f1f3f6; --card:#ffffff; --ink:#1c2331; --muted:#5d6678; --line:#dce1e9;
+  --accent:#2c6e72; --accent-ink:#ffffff; --accent-soft:#e0eeee;
+  --wall:#c3d0dd; --them:#ffffff; --me:#d2eae5; --note:rgba(28,35,49,.32); --note-ink:#ffffff;
+  --good:#2b8a57; --ok:#a8760c; --bad:#c2453e; --heart:#d9577a;
+  --good-soft:#e3f3ea; --ok-soft:#f8efd9; --bad-soft:#f9e4e2;
+  --f-display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif;
+  --f-body:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo","Noto Sans JP",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#13161c; --card:#1b1f27; --ink:#e5e8ee; --muted:#9aa3b4; --line:#2c3240;
+  --accent:#6cc2be; --accent-ink:#0f2526; --accent-soft:#1d3536;
+  --wall:#1d2531; --them:#2a313e; --me:#1f4846; --note:rgba(255,255,255,.12); --note-ink:#dfe4ec;
+  --good:#5cc48a; --ok:#e0b04a; --bad:#ef7a72; --heart:#ef7d9a;
+  --good-soft:#1c3327; --ok-soft:#332a14; --bad-soft:#3a1f1d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#13161c; --card:#1b1f27; --ink:#e5e8ee; --muted:#9aa3b4; --line:#2c3240;
+  --accent:#6cc2be; --accent-ink:#0f2526; --accent-soft:#1d3536;
+  --wall:#1d2531; --them:#2a313e; --me:#1f4846; --note:rgba(255,255,255,.12); --note-ink:#dfe4ec;
+  --good:#5cc48a; --ok:#e0b04a; --bad:#ef7a72; --heart:#ef7d9a;
+  --good-soft:#1c3327; --ok-soft:#332a14; --bad-soft:#3a1f1d; color-scheme:dark}
+
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65}
+#app{max-width:520px;margin:0 auto;height:100%;background:var(--paper);display:flex;flex-direction:column}
+.screen{flex:1;min-height:0;display:flex;flex-direction:column}
+.scroll{overflow-y:auto;padding:24px 16px 40px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;font-weight:700}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible+label{outline:3px solid var(--accent);outline-offset:2px}
+.btn{border:0;border-radius:999px;padding:14px 22px;font-weight:700;font-family:var(--f-display);font-size:16px}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700}
+.muted{color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:16px}
+
+/* ---------- start ---------- */
+.hero{display:flex;flex-direction:column;gap:10px;padding-block:8px 4px}
+.hero h1{font-size:30px;line-height:1.3}
+.hero p{margin:0;color:var(--muted)}
+.phone-peek{display:flex;flex-direction:column;gap:6px;background:var(--wall);border-radius:18px;padding:16px}
+.peek{max-width:78%;padding:8px 12px;border-radius:16px;font-size:13.5px;line-height:1.5}
+.peek.them{background:var(--them);border-top-left-radius:4px}
+.peek.me{background:var(--me);align-self:flex-end;border-top-right-radius:4px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;display:flex;flex-direction:column;gap:14px}
+.panel h2{font-size:17px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:12px;border:1.5px solid var(--line);font-weight:700;cursor:pointer}
+.seg input:checked+label{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.toggle small{display:block;color:var(--muted);font-size:12.5px;line-height:1.5}
+.switch{position:relative;width:48px;height:28px;flex:none}
+.switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:1}
+.switch span{position:absolute;inset:0;border-radius:99px;background:var(--line);transition:background .2s}
+.switch span::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.switch input:checked+span{background:var(--accent)}
+.switch input:checked+span::after{transform:translateX(20px)}
+.switch input:focus-visible+span{outline:3px solid var(--accent);outline-offset:2px}
+.rules{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.rules li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:baseline;font-size:14px}
+.rules b{font-family:var(--f-display);color:var(--accent);font-size:13px;white-space:nowrap}
+.axes-mini{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:3px 10px;font-size:12px;font-weight:700;background:var(--accent-soft);color:var(--ink)}
+.history{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.history li{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:8px 0;border-bottom:1px dashed var(--line);font-variant-numeric:tabular-nums}
+.history li:last-child{border-bottom:0}
+.notice{font-size:12.5px;color:var(--muted);line-height:1.6}
+
+/* ---------- chat ---------- */
+.chat-head{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.avatar{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;background:var(--accent-soft);color:var(--accent);font-size:17px}
+.who{flex:1;min-width:0}
+.who b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who span{font-size:12px;color:var(--muted)}
+.meter{display:flex;flex-direction:column;align-items:flex-end;gap:3px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.meter-bar{width:78px;height:6px;border-radius:9px;background:var(--line);overflow:hidden}
+.meter-bar i{display:block;height:100%;background:var(--heart);border-radius:9px;transition:width .5s ease}
+.quit{border:0;background:transparent;color:var(--muted);font-size:12.5px;padding:6px 4px;white-space:nowrap}
+.progress{height:3px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .4s ease}
+.log{flex:1;min-height:0;overflow-y:auto;background:var(--wall);padding:16px;display:flex;flex-direction:column;gap:10px}
+.row{display:flex;align-items:flex-end;gap:6px;max-width:100%}
+.row.them{align-self:flex-start}
+.row.me{align-self:flex-end;flex-direction:row-reverse}
+.row .avatar{width:32px;height:32px;font-size:14px;align-self:flex-start}
+.bubble{max-width:min(76vw,330px);padding:9px 13px;border-radius:18px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14.5px;line-height:1.6;animation:pop .22s ease-out}
+.them .bubble{background:var(--them);border-top-left-radius:5px}
+.me .bubble{background:var(--me);border-top-right-radius:5px}
+.meta{font-size:10.5px;color:var(--ink);opacity:.62;line-height:1.3;white-space:nowrap;font-variant-numeric:tabular-nums;text-align:right}
+.them .meta{text-align:left}
+.date{align-self:center;background:var(--note);color:var(--note-ink);font-size:11.5px;padding:2px 12px;border-radius:99px;font-variant-numeric:tabular-nums}
+.sys{align-self:center;max-width:92%;background:var(--note);color:var(--note-ink);font-size:12.5px;padding:6px 14px;border-radius:12px;text-align:center;line-height:1.55}
+.hint{align-self:stretch;background:var(--card);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.6;display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;border:1px solid var(--line);animation:pop .22s ease-out}
+.grade{display:inline-block;font-family:var(--f-display);font-weight:700;font-size:12px;border-radius:99px;padding:2px 9px;white-space:nowrap}
+.g2{background:var(--good-soft);color:var(--good)}
+.g1{background:var(--ok-soft);color:var(--ok)}
+.g0{background:var(--bad-soft);color:var(--bad)}
+.typing{display:flex;gap:4px;padding:13px 14px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);opacity:.5;animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{50%{opacity:1;transform:translateY(-2px)}}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.dock{background:var(--card);border-top:1px solid var(--line);padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px}
+.dock-label{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.choice{text-align:left;border:1.5px solid var(--line);background:var(--paper);border-radius:14px;padding:11px 14px;font-size:14px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;transition:border-color .15s,background .15s}
+.choice:hover{border-color:var(--accent)}
+.choice:active{background:var(--accent-soft)}
+.choices{display:flex;flex-direction:column;gap:8px;max-height:46vh;overflow-y:auto}
+.waiting{font-size:13px;color:var(--muted);text-align:center;padding:10px 0}
+
+/* ---------- report ---------- */
+.score-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px 18px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.score-num{font-family:var(--f-display);font-size:56px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent)}
+.score-num small{font-size:16px;color:var(--muted);margin-left:2px}
+.rank{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-display);font-weight:700;font-size:15px}
+.rank i{font-style:normal;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:16px}
+.score-card p{margin:6px 0 0;font-size:13.5px;color:var(--muted)}
+.section-title{font-size:17px;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.section-title small{font-family:var(--f-body);font-weight:400;font-size:12px;color:var(--muted)}
+.axis{display:grid;grid-template-columns:8.5em 1fr 3.2em;gap:10px;align-items:center;font-size:13.5px}
+.axis-bar{height:10px;border-radius:9px;background:var(--line);overflow:hidden}
+.axis-bar i{display:block;height:100%;border-radius:9px;background:var(--accent)}
+.axis-bar i.low{background:var(--ok)}
+.axis b{text-align:right;font-variant-numeric:tabular-nums}
+.axis.none{color:var(--muted)}
+.spark{width:100%;height:auto;display:block}
+.spark text{fill:var(--muted);font-size:10px;font-family:var(--f-body)}
+.tip{border-radius:14px;padding:14px;background:var(--accent-soft);font-size:14px;display:flex;flex-direction:column;gap:4px}
+.tip b{font-family:var(--f-display)}
+.review{display:flex;flex-direction:column;gap:12px;margin:0;padding:0;list-style:none}
+.rv{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;font-size:13.5px}
+.rv-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.rv-head h3{font-size:14.5px}
+.rv-head span.n{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums;margin-right:6px}
+.q{color:var(--muted);border-left:3px solid var(--line);padding-left:10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.ans{white-space:pre-wrap;overflow-wrap:anywhere}
+.lbl{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted);display:block;margin-bottom:2px}
+.better{background:var(--good-soft);border-radius:10px;padding:8px 10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.better .lbl{color:var(--good)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.actions .wide{grid-column:1/-1}
+#copyArea{width:100%;min-height:120px;font:inherit;font-size:12.5px;border-radius:10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div id="app">
+  <!-- START -->
+  <section class="screen" id="start">
+    <div class="scroll stack">
+      <div class="hero">
+        <span class="eyebrow">新規会員さん向け ・ 仮交際スタート期</span>
+        <h1>仮交際LINE練習</h1>
+        <p>お見合い後のやり取りを、3つの選択肢から選んで練習します。1回8往復・約5分。終わると振り返りレポートが出ます。</p>
+      </div>
+
+      <div class="phone-peek" aria-hidden="true">
+        <div class="peek them">今日は駅の近くに新しくできたカフェに行ってきました😊 お休みは何してましたか？</div>
+        <div class="peek me">いいですね！どんなお店でしたか？私は友人とランチに行ってきました。</div>
+      </div>
+
+      <div class="panel">
+        <h2>練習の設定</h2>
+        <div>
+          <div class="muted" style="font-size:13px;margin-bottom:6px">お相手</div>
+          <div class="seg" role="radiogroup" aria-label="お相手">
+            <input type="radio" name="gender" id="g-f" value="f" checked><label for="g-f">女性</label>
+            <input type="radio" name="gender" id="g-m" value="m"><label for="g-m">男性</label>
+          </div>
+        </div>
+        <div class="toggle">
+          <div><b>その場でヒントを出す</b><small>選んだ直後に ◎ ○ △ と一言アドバイスを表示します。慣れてきたらオフにして、レポートだけで確認しましょう。</small></div>
+          <label class="switch"><input type="checkbox" id="hints" checked aria-label="その場でヒントを出す"><span></span></label>
+        </div>
+        <button class="btn btn-primary" id="startBtn">練習をはじめる</button>
+      </div>
+
+      <div class="panel">
+        <h2>この練習で身につけたい5つの力</h2>
+        <div class="axes-mini" id="axesMini"></div>
+        <ul class="rules">
+          <li><b>基本の型</b><span>相手の話にリアクション → 聞かれたことに答える → 質問を1つ返す</span></li>
+          <li><b>長さ</b><span>1通は3〜5行。相手の文量に合わせる</span></li>
+          <li><b>序盤は控える</b><span>お金・過去の恋愛・結婚後の条件の話</span></li>
+          <li><b>誘い方</b><span>相手の話題から自然に。日時の候補を2つ出す</span></li>
+        </ul>
+      </div>
+
+      <div class="panel" id="historyPanel" hidden>
+        <h2>これまでの記録 <small class="muted" style="font-family:var(--f-body);font-weight:400;font-size:12px">この端末だけに保存</small></h2>
+        <ul class="history" id="historyList"></ul>
+      </div>
+
+      <p class="notice">登場するお相手・会話はすべて練習用の架空のものです。毎回お相手と話題の組み合わせが変わるので、何度でも練習できます。実際の個人名や連絡先は入力しないでください。</p>
+    </div>
+  </section>
+
+  <!-- CHAT -->
+  <section class="screen" id="chat" hidden>
+    <header class="chat-head">
+      <div class="avatar" id="headAvatar">美</div>
+      <div class="who"><b id="headName">高橋 美咲さん</b><span id="headSub">29歳・看護師</span></div>
+      <div class="meter" aria-label="好感度"><span>好感度 <b id="affNum">50</b></span><div class="meter-bar"><i id="affBar" style="width:50%"></i></div></div>
+      <button class="quit" id="quitBtn">やめる</button>
+    </header>
+    <div class="progress"><i id="prog" style="width:0"></i></div>
+    <div class="log" id="log" aria-live="polite"></div>
+    <div class="dock" id="dock">
+      <div class="dock-label"><span id="dockLabel">送るメッセージを選んでください</span><span id="roundLabel"></span></div>
+      <div class="choices" id="choices"></div>
+    </div>
+  </section>
+
+  <!-- REPORT -->
+  <section class="screen" id="report" hidden>
+    <div class="scroll stack" id="reportBody"></div>
+  </section>
+</div>
+
+<script>
+const AX = {kyokan:'共感・リアクション', shitsumon:'質問・話題づくり', tempo:'長さ・テンポ', hairyo:'配慮・マナー', sekkyoku:'前向きさ・誘い方'};
+const TIPS = {
+  kyokan:'相手のメッセージの「気持ち」に一言反応してから自分の話をしましょう。「楽しそう！」「お疲れ様です」「美味しそう！」が会話の入口です。',
+  shitsumon:'返信の最後に質問を1つ入れると、会話のボールが相手に渡ります。質問は1通につき1つまで。お見合いで聞いた趣味や好きな食べ物を活用しましょう。',
+  tempo:'相手の文量に合わせるのが基本です。1通は3〜5行、話題は1つに絞り、連投や長文は避けましょう。',
+  hairyo:'相手の時間・体調・気持ちを想像して返信しましょう。お金・過去の恋愛・結婚後の条件の話は、関係が深まるまで控えます。',
+  sekkyoku:'デートの誘いは相手の話題から自然に。「来週の土曜か日曜のお昼はどうですか？」のように日時の候補を2つ出すと決まりやすくなります。'
+};
+const GRADE = ['△ 気をつけたい','○ もう一歩','◎ いい返信'];
+
+const PERSONAS = {
+  f:[
+    {sei:'高橋',mei:'美咲',age:29,job:'看護師',hobby:'カフェ巡り',hobbyAct:'駅の近くに新しくできたカフェに行ってきました',food:'パスタ',place:'横浜'},
+    {sei:'佐々木',mei:'彩',age:31,job:'事務職',hobby:'映画鑑賞',hobbyAct:'話題になってたアニメ映画を観てきました',food:'お寿司',place:'大宮'},
+    {sei:'中村',mei:'由佳',age:27,job:'保育士',hobby:'ヨガ',hobbyAct:'朝ヨガのレッスンに行ってきました',food:'韓国料理',place:'船橋'},
+    {sei:'山本',mei:'千尋',age:33,job:'薬剤師',hobby:'パン屋巡り',hobbyAct:'気になってたパン屋さんに並んで買ってきました',food:'パン',place:'吉祥寺'},
+    {sei:'小林',mei:'遥',age:30,job:'営業事務',hobby:'キャンプ',hobbyAct:'友達とデイキャンプに行ってきました',food:'焼肉',place:'町田'},
+    {sei:'加藤',mei:'真由',age:35,job:'経理',hobby:'料理',hobbyAct:'初めてビーフシチューを作ってみました',food:'和食',place:'川崎'}
+  ],
+  m:[
+    {sei:'田中',mei:'健太',age:32,job:'システムエンジニア',hobby:'ランニング',hobbyAct:'朝から川沿いを10キロ走ってきました',food:'ラーメン',place:'品川'},
+    {sei:'伊藤',mei:'大輔',age:34,job:'営業',hobby:'ゴルフ',hobbyAct:'打ちっぱなしに行ってきました',food:'焼き鳥',place:'浦和'},
+    {sei:'渡辺',mei:'翔',age:29,job:'公務員',hobby:'サッカー観戦',hobbyAct:'スタジアムで試合を観てきました',food:'カレー',place:'横浜'},
+    {sei:'鈴木',mei:'拓也',age:36,job:'メーカー勤務',hobby:'釣り',hobbyAct:'早起きして海釣りに行ってきました',food:'お寿司',place:'千葉'},
+    {sei:'山田',mei:'直樹',age:31,job:'教員',hobby:'読書',hobbyAct:'気になってた小説を一気に読みました',food:'中華',place:'立川'},
+    {sei:'松本',mei:'亮',age:38,job:'設計士',hobby:'カメラ',hobbyAct:'カメラを持って公園を散歩してきました',food:'お蕎麦',place:'鎌倉'}
+  ]
+};
+
+/* ---------- scenario pools ---------- */
+const OPEN = [
+ {title:'お見合い後の最初のLINE', ax:['kyokan','hairyo'],
+  msg:['本日はお時間をいただきありがとうございました！{sei}です。とても楽しい時間でした😊 これからよろしくお願いします。',
+       '{sei}です。今日はありがとうございました！緊張してうまく話せなかったかもですが、また色々お話しできたら嬉しいです。'],
+  good:[
+   {t:'{sei}さん、今日はありがとうございました！{hobby}のお話がとても楽しかったです。こちらこそ、これからよろしくお願いします😊', f:'お礼に当日の具体的な話題を添えると「ちゃんと聞いてくれていた」と伝わります。'},
+   {t:'こちらこそありがとうございました！私も緊張していましたが、{sei}さんが話しやすくてあっという間でした。よろしくお願いします。', f:'「私も緊張していた」で相手が安心し、「話しやすかった」で相手を立てています。'}],
+  ok:[
+   {t:'ありがとうございました。よろしくお願いします。', f:'失礼ではありませんが、そっけなく見えます。当日の話題をひとつ添えると印象が変わります。'},
+   {t:'ありがとうございます！よろしくです〜！', f:'明るさは良いですが、最初から言葉を崩しすぎ。はじめは丁寧語で、少しずつ崩していきましょう。'}],
+  bad:[
+   {t:'今日はありがとうございました。改めて自己紹介させてください。私は…（経歴・家族構成・年収・結婚観が20行続く）', f:'最初から長文の自己紹介は、相手が返信に困ります。1通は3〜5行が目安です。'},
+   {t:'ありがとうございました！早速ですが、次はいつ会えますか？今週末どうですか？', f:'最初の1通で日程を詰めるのは急ぎすぎ。数日やり取りして関係を温めてから誘いましょう。'},
+   {t:'了解です。', f:'お礼への返事として冷たい印象です。「了解です」は業務連絡のように受け取られがちです。'}],
+  re:{good:['よかったです😊 {hobby}の話、また聞いてください！','そう言ってもらえて安心しました！これからよろしくお願いします😊'], ok:['はい、よろしくお願いします。'], bad:['あ…はい、ありがとうございます。','えっと…よろしくお願いします。']}},
+ {title:'交際成立後、あなたから最初の連絡', ax:['kyokan','sekkyoku'],
+  sit:'お見合いのあと、交際成立の連絡が来ました。最初のLINEはあなたから送ります。',
+  good:[
+   {t:'{sei}さん、こんばんは！本日はありがとうございました。{hobby}のお話がとても楽しくて、もっと聞きたいなと思いました。これからよろしくお願いします😊', f:'お礼＋当日の話題＋前向きな気持ち。最初の1通として理想的です。'},
+   {t:'{sei}さん、こんばんは。今日はお会いできて嬉しかったです。交際のお返事ありがとうございます！少しずつお互いのことを知っていけたら嬉しいです。', f:'嬉しい気持ちを素直に伝えていて好印象。相手も返信しやすい文量です。'}],
+  ok:[
+   {t:'こんばんは。今日はありがとうございました。', f:'挨拶だけで終わると、相手は何を返せばいいか迷います。当日の話題をひとつ添えましょう。'},
+   {t:'お世話になっております。本日はお見合いにお越しいただき、誠にありがとうございました。今後とも何卒よろしくお願い申し上げます。', f:'丁寧すぎてビジネスメールのようです。距離を感じさせるので、もう少しやわらかく。'}],
+  bad:[
+   {t:'こんばんは！交際成立ありがとうございます！単刀直入に聞きますが、結婚後も仕事は続けたいですか？子どもは何人ほしいですか？', f:'結婚観は大切な話ですが、最初のLINEで聞くと尋問のように感じられます。会って関係ができてからにしましょう。'},
+   {t:'（翌日の夜まで連絡しない）', act:true, f:'交際成立後の最初の連絡は当日中が基本です。待たせると「乗り気じゃないのかな」と思われます。', r:'（翌日）昨日はありがとうございました。ご連絡がなかったので、少し心配していました。'}],
+  re:{good:['こんばんは！こちらこそありがとうございました😊 ご連絡うれしいです！'], ok:['こんばんは、こちらこそありがとうございました。'], bad:['こんばんは…。そのあたりは、また今度ゆっくりお話しできたら…。']}}
+];
+
+const MID = [
+ {title:'週末の報告', ax:['kyokan','shitsumon'],
+  msg:['今日は{hobbyAct}😊 お休みは何してましたか？'],
+  good:[
+   {t:'いいですね！{hobby}、本当にお好きなんですね😊 私は部屋の片付けをして、夕方に少し散歩してました。{sei}さんのおすすめも今度教えてください！', f:'①相手の話に反応 ②質問に答える ③質問を返す、の3点セット。会話が続く理想形です。'},
+   {t:'楽しそうですね！どんな感じでしたか？私は友人とランチに行ってきました。', f:'相手の話を深掘りする質問と自分の答えがそろっていて、相手が話しやすくなります。'}],
+  ok:[
+   {t:'私は家でゆっくりしてました。', f:'質問には答えていますが、相手の話へのリアクションも質問もないので会話が止まりやすいです。'},
+   {t:'いいですね！', f:'リアクションだけで、相手の質問に答えていません。'}],
+  bad:[
+   {t:'私も最近{hobby}に興味あって。というか私の趣味の話なんですけど、昔からずっと…（自分の趣味の話が長く続く）', f:'相手の話題を自分の話にすり替えるのはNG。まず相手の話を広げましょう。'},
+   {t:'{hobby}ってお金かかりそうですね笑', f:'冗談でも、相手の好きなものを否定的に言うのは避けましょう。'}],
+  re:{good:['すごく良かったです！今度写真見せますね📷','ぜひぜひ！おすすめたくさんあります笑'], ok:['そうなんですね😊'], bad:['そうですね…笑']}},
+
+ {title:'「仕事で疲れた」と言われたら', ax:['kyokan','hairyo'],
+  msg:['今日は仕事がバタバタで、やっと帰ってきました…💦','{job}の仕事、今週ずっと忙しくてちょっと疲れ気味です😵'],
+  good:[
+   {t:'お疲れ様でした！バタバタの日は本当に疲れますよね。今日はゆっくり休んでくださいね🍵', f:'まず労う。疲れている相手には、質問攻めより「休んでね」が一番です。'},
+   {t:'遅くまでお疲れ様です！{job}のお仕事、大変ですよね。返信は気にせず、ゆっくりしてください。', f:'「返信は気にしないで」は相手の負担を減らす思いやりです。'}],
+  ok:[
+   {t:'お疲れ様です。私も今日は忙しかったです。', f:'「私も」ですぐ自分の話に戻すと、相手の疲れを受け止めきれていません。'}],
+  bad:[
+   {t:'私なんて今日もっと大変で、朝から会議が5本あって…', f:'疲れの張り合いはNG。まず相手の話を受け止めましょう。'},
+   {t:'もっと効率よくやれば早く帰れるんじゃないですか？', f:'求められていないアドバイスは否定に聞こえます。まずは共感を。'},
+   {t:'お疲れ様です！ところで来週の土曜空いてますか？あと好きな映画ってなんですか？', f:'疲れている相手に質問を重ねると負担になります。'}],
+  re:{good:['ありがとうございます…！そう言ってもらえると元気出ます😊'], ok:['そうなんですね、お互いお疲れ様です。'], bad:['あはは…そうですね。今日はもう休みますね。']}},
+
+ {title:'好きな食べ物の話', ax:['shitsumon','kyokan'],
+  msg:['最近{food}にハマってて、週2で食べてます笑 好きな食べ物ありますか？'],
+  good:[
+   {t:'週2はすごい！笑 {food}、私も好きです。私はハンバーグが好きで、美味しいお店を探すのが楽しみなんです。{sei}さんのおすすめのお店ありますか？', f:'リアクション→答え→質問。食べ物の話は次のデートにつながりやすい話題です。'},
+   {t:'ハマってるんですね😊 私はお肉料理が好きです！{food}だと、どんなお店によく行くんですか？', f:'相手の「ハマってる」に乗って質問を返しているので、相手が話しやすくなります。'}],
+  ok:[
+   {t:'ハンバーグです。', f:'一言で答えるだけでは会話が続きません。'},
+   {t:'何でも好きです！', f:'無難ですが、相手は話を広げにくいです。具体的に答えた方が盛り上がります。'}],
+  bad:[
+   {t:'週2は食べすぎじゃないですか？笑 健康に気をつけた方がいいですよ', f:'からかいや指摘は、距離が縮まる前だと失礼に感じられます。'},
+   {t:'{food}は苦手なんですよね…。', f:'相手が「好き」と言った直後に否定から入ると会話が冷えます。苦手でも別の話題につなげましょう。'}],
+  re:{good:['ありますあります！駅前のお店がおすすめです😊','いいですね！今度一緒に行けたら嬉しいです😊'], ok:['そうなんですね！'], bad:['あ、そうですよね…笑']}},
+
+ {title:'体調を気づかわれたら', ax:['hairyo','shitsumon'],
+  msg:['急に寒くなりましたね🥶 風邪ひいてないですか？','今日すごい雨でしたね☔ 濡れませんでしたか？'],
+  good:[
+   {t:'ありがとうございます、私は大丈夫です😊 {sei}さんも体調崩さないようにしてくださいね。こういう日は温かいものが食べたくなりますね。', f:'お礼＋気遣い返し＋次の話題のきっかけ。とても自然です。'},
+   {t:'ありがとうございます、元気です！{sei}さんは大丈夫でしたか？', f:'シンプルですが、気遣いを返していて好印象です。'}],
+  ok:[
+   {t:'大丈夫です。', f:'気遣いへの返事として短すぎます。お礼と「{sei}さんは？」を加えると◎。'}],
+  bad:[
+   {t:'天気予報見てないんですか？昨日から言ってましたよ', f:'相手の気遣いを茶化したり指摘したりするのはNGです。'},
+   {t:'（既読をつけたまま翌日まで返信しない）', act:true, f:'簡単な話題でも既読スルーは相手を不安にさせます。短くても当日中に返信を。', r:'（翌日）…お忙しかったですかね？'}],
+  re:{good:['よかったです😊 温かいもの、いいですね！最近は鍋ばっかりです笑'], ok:['それならよかったです！'], bad:['あ、すみません…笑']}},
+
+ {title:'写真が送られてきたら', ax:['kyokan','shitsumon'],
+  msg:['今日のお昼です📷\n【写真：{food}のランチ】'],
+  good:[
+   {t:'わぁ、美味しそう！どこのお店ですか？😊', f:'写真には素直なリアクション＋質問を1つ。相手は送った甲斐を感じます。'},
+   {t:'美味しそう〜！見てたらお腹すいてきました笑 {food}本当にお好きなんですね。', f:'気持ちのこもったリアクションで、相手は嬉しくなります。'}],
+  ok:[
+   {t:'いいですね。', f:'悪くはありませんが温度が低め。「美味しそう！」の一言で印象が変わります。'},
+   {t:'（スタンプだけ返す）', act:true, f:'スタンプだけだと会話が終わりがちです。言葉＋スタンプがおすすめ。'}],
+  bad:[
+   {t:'カロリー高そうですね笑', f:'食べ物の写真へのカロリー指摘は地雷になりやすいです。'},
+   {t:'私のお昼はこれです📷【写真】 私のほうが美味しそうじゃないですか？笑', f:'張り合うより、まず相手の写真に反応しましょう。'}],
+  re:{good:['会社の近くのお店です！今度一緒に行きましょう😊'], ok:['😊'], bad:['…ですね笑']}},
+
+ {title:'休日の過ごし方を聞かれたら', ax:['shitsumon','tempo'],
+  msg:['そういえば、お休みの日は何をして過ごすことが多いですか？'],
+  good:[
+   {t:'朝ゆっくり起きて、午後はカフェで本を読むことが多いです☕ {sei}さんは{hobby}以外にも何かされてますか？', f:'具体的に答えると相手が想像しやすく、共通点も見つかります。'},
+   {t:'家で料理したり、天気がいい日は散歩したりしてます！最近は新しいお店を開拓するのにハマってます。{sei}さんは？', f:'ちょうどいい文量で、質問も返せています。'}],
+  ok:[
+   {t:'特に何もしてないです笑', f:'謙遜のつもりでも話が広がりません。小さなことでも具体的に。'}],
+  bad:[
+   {t:'休日はですね、まず朝7時に起きてジムに行き、そのあと…（休日のスケジュールが15行続く）', f:'長文は読むのも返すのも負担です。相手の文量に合わせましょう。'},
+   {t:'寝てます。それより{sei}さんの過去の恋愛ってどんな感じでしたか？', f:'過去の恋愛の話は序盤ではNG。質問への答えも雑になっています。'}],
+  re:{good:['素敵ですね！私も散歩好きです😊'], ok:['そうなんですね笑'], bad:['えっと…それはまた今度で…']}},
+
+ {title:'相手の返信が遅れたとき', ax:['hairyo','kyokan'],
+  msg:['返信遅くなってごめんなさい🙏 昨日は友達の結婚式で、バタバタしてました！'],
+  good:[
+   {t:'いえいえ、全然気にしないでください！結婚式いいですね✨ 楽しかったですか？', f:'責めずに受け止めて、相手の出来事に興味を向けています。安心感を与えます。'},
+   {t:'お気になさらず😊 お友達の結婚式、素敵ですね！お疲れ様でした。', f:'気にしないでの一言と労い。相手はほっとします。'}],
+  ok:[
+   {t:'大丈夫です。', f:'責めてはいませんが、少し怒っているようにも読めます。一言添えましょう。'}],
+  bad:[
+   {t:'昨日ずっと返信待ってたんですよ…。忙しくても一言ほしかったです。', f:'返信ペースを責めるのは序盤で最も避けたい行動です。相手は負担を感じます。'},
+   {t:'結婚式いいなぁ、私たちも早く結婚したいですね！', f:'まだ仮交際の序盤です。結婚を急ぐ発言は重く受け取られます。'}],
+  re:{good:['ありがとうございます😊 すごく感動しました！'], ok:['すみません、ありがとうございます。'], bad:['すみません…気をつけます。']}},
+
+ {title:'会話が途切れそうなとき', ax:['shitsumon','sekkyoku'],
+  sit:'相手からの返信が短く、話題が途切れそうです。',
+  msg:['そうなんですね😊'],
+  good:[
+   {t:'そういえば、{sei}さんは{hobby}がお好きでしたよね。始めたきっかけってなんだったんですか？', f:'途切れたら、相手の好きなことを質問するのが鉄板。お見合いで聞いた話題を活用しましょう。'},
+   {t:'話は変わりますが、最近おすすめのドラマとかありますか？面白いものを探してて😊', f:'自然に新しい話題を出せています。答えやすい質問です。'}],
+  ok:[
+   {t:'（スタンプを返す）', act:true, f:'失礼ではありませんが、会話はここで終わってしまいます。'}],
+  bad:[
+   {t:'あれ、もしかしてLINE面倒くさいですか…？', f:'短い返信＝脈なしとは限りません。不安をぶつけると相手が負担に感じます。'},
+   {t:'（立て続けに5通、別々の話題を送る）', act:true, f:'連投は圧を感じさせます。1通で1つの話題を。', r:'たくさんありがとうございます笑 ちょっと順番に読みますね…！'}],
+  re:{good:['よく覚えててくれましたね！実は友達に誘われたのがきっかけで…😊','ありますよ！最近見てるのは…'], ok:['😊'], bad:['いえいえ、そんなことないですよ…！']}},
+
+ {title:'家族の話', ax:['hairyo','shitsumon'],
+  msg:['実家は{place}で、両親と兄が一人います！ご兄弟はいらっしゃいますか？'],
+  good:[
+   {t:'{place}なんですね！私は姉が一人います。お兄さんとは仲良しですか？', f:'答えて、軽く質問を返す。家族の話は踏み込みすぎない範囲で。'},
+   {t:'私は一人っ子なんです。{place}、いいところですよね！よく帰られるんですか？', f:'自分のことを話しつつ、相手が答えやすい質問を返しています。'}],
+  ok:[
+   {t:'姉がいます。', f:'答えだけだと会話が止まりがちです。'}],
+  bad:[
+   {t:'ご両親はおいくつですか？将来の同居とか介護とかってどう考えてます？', f:'大切な話ですが、関係が深まる前に聞くとプレッシャーになります。真剣交際の段階で。'},
+   {t:'ご実家は持ち家ですか？お父様のお仕事は？', f:'家庭の経済状況を探るような質問は失礼に感じられます。'}],
+  re:{good:['仲良しです！よく一緒にご飯行きます😊'], ok:['そうなんですね！'], bad:['えっと…まだそこまでは考えてなくて…']}},
+
+ {title:'連休の予定', ax:['shitsumon','sekkyoku'],
+  msg:['来月の連休、どこか行かれる予定ありますか？'],
+  good:[
+   {t:'まだ決めてないんです！温泉とか行きたいなと思ってて♨️ {sei}さんは旅行お好きですか？', f:'予定＋気持ち＋質問。旅行の話は好みや価値観も自然に知れます。'},
+   {t:'近場でのんびりしようかなと思ってます。{sei}さんは何か予定ありますか？', f:'シンプルですが、質問を返せていて会話が続きます。'}],
+  ok:[
+   {t:'特にないです。', f:'会話が止まりやすい返事です。「{sei}さんは？」と返すだけで変わります。'}],
+  bad:[
+   {t:'じゃあ一緒に旅行行きませんか？一泊で！', f:'仮交際での泊まりの誘いはNG。相談所のルールでも禁止されていることがほとんどです。'},
+   {t:'連休も仕事です。旅行ってお金の無駄だと思うんですよね。', f:'価値観が違っても、否定的な言い方は避けましょう。'}],
+  re:{good:['温泉いいですね！私も好きです♨️'], ok:['そうなんですね〜'], bad:['あ…えっと…']}},
+
+ {title:'映画の感想', ax:['kyokan','shitsumon'],
+  msg:['最近、話題の映画観てきました🎬 すっごく泣けました…！'],
+  good:[
+   {t:'泣ける映画いいですね！どんなお話なんですか？気になります😊', f:'相手の感動に共感して、話したくなる質問をしています。'},
+   {t:'あの映画、私も気になってました！ネタバレなしで、どこが良かったですか？', f:'共通の関心を見せつつ、相手に語ってもらう質問です。'}],
+  ok:[
+   {t:'映画あんまり観ないんですよね。', f:'正直でも、それだけだと会話が終わります。「でも気になります」と添えるだけで違います。'}],
+  bad:[
+   {t:'映画で泣くタイプなんですね笑 意外です', f:'からかっているように受け取られる可能性があります。'},
+   {t:'あの監督なら前作のほうが演出も脚本も上ですよ。そもそも…（映画評論が続く）', f:'相手の感動に水を差す評論はNG。まずは「良かったね」を共有しましょう。'}],
+  re:{good:['家族のお話なんですけど、最後が本当に良くて…！ぜひ観てほしいです😊'], ok:['そうなんですね！'], bad:['そうですかね…笑']}},
+
+ {title:'「仕事が忙しい時期」と言われたら', ax:['kyokan','hairyo'],
+  msg:['今月は{job}の仕事が忙しい時期で、なかなか自分の時間が取れないんです😅'],
+  good:[
+   {t:'忙しい時期なんですね、お疲れ様です。{job}は大変そうですけど、やりがいも大きそうですね。無理しないでくださいね。', f:'労い＋相手の仕事への敬意。忙しい相手に負担をかけない返信です。'},
+   {t:'そうなんですね！忙しい中、連絡ありがとうございます😊 落ち着いたらまた{hobby}の話聞かせてください。', f:'感謝を伝えつつ、プレッシャーをかけない一言で好印象。'}],
+  ok:[
+   {t:'大変ですね。', f:'気持ちは伝わりますが、少し他人事に聞こえます。'}],
+  bad:[
+   {t:'そんなに忙しいと、結婚したら家のこととかどうするんですか？', f:'序盤で結婚後の役割分担を問い詰めるのはプレッシャーになります。'},
+   {t:'忙しい分、お給料たくさんもらえてそうですね！年収ってどれくらいなんですか？', f:'お金の話はプロフィールで確認済みのはず。直接聞くのはマナー違反です。'}],
+  re:{good:['ありがとうございます😊 そう言ってもらえると頑張れます！'], ok:['はい…なんとか頑張ります笑'], bad:['えっと…それはまた今度…']}},
+
+ {title:'落ち込んでいると言われたら', ax:['kyokan','hairyo'],
+  msg:['今日ちょっと仕事でミスしちゃって、落ち込んでます…😢'],
+  good:[
+   {t:'それは落ち込みますよね…。でも、ちゃんと気にしてるのは真面目な証拠だと思います。今日は好きなもの食べてゆっくりしてくださいね。', f:'まず気持ちを受け止め、相手の良さを伝えています。'},
+   {t:'大丈夫ですか？話せる範囲で、聞きますよ。', f:'寄り添いつつ、無理に聞き出さない。安心感があります。'}],
+  ok:[
+   {t:'ドンマイです！', f:'励ましのつもりでも軽く聞こえることがあります。まずは気持ちを受け止めて。'}],
+  bad:[
+   {t:'どんなミスですか？次からはダブルチェックしたらいいと思いますよ。', f:'落ち込んでいる時の正論アドバイスは逆効果。解決策は求められてから。'},
+   {t:'私なんてこの前もっと大きいミスしましたよ笑', f:'励ましのつもりでも、相手の気持ちより自分の話が前に出ています。'}],
+  re:{good:['ありがとうございます…ちょっと元気出ました😊'], ok:['ありがとうございます…！'], bad:['そうですよね…すみません。']}},
+
+ {title:'夜遅くのLINE', ax:['hairyo','tempo'], time:'23:40',
+  msg:['まだ起きてますか？笑 なんだか眠れなくて'],
+  good:[
+   {t:'起きてますよ！眠れない夜ありますよね😊 少しだけお話ししましょう。明日に響かないようにしてくださいね。', f:'付き合いつつ相手の明日を気遣う、ちょうどいい返事です。'},
+   {t:'ちょうど寝る準備をしてました！少しなら大丈夫ですよ。何かありましたか？', f:'自分の状況を伝えつつ、相手を気にかけています。'}],
+  ok:[
+   {t:'起きてます。', f:'返事はしていますが、そっけなく感じます。'}],
+  bad:[
+   {t:'じゃあ今から電話しませんか？声聞きたいです！', f:'まだ電話もしていない段階で、深夜の通話の提案は唐突です。電話は日中か夜の早い時間に、事前に約束を。'},
+   {t:'こんな時間に連絡してくるのは非常識ですよ', f:'内容が正しくても言い方がきつすぎます。'}],
+  re:{good:['ありがとうございます😊 ちょっと話したら眠くなってきました笑'], ok:['あ、そうなんですね。'], bad:['ご、ごめんなさい…今日はやめておきます。']}},
+
+ {title:'電話の提案', ax:['sekkyoku','hairyo'],
+  msg:['今度、電話でもお話ししてみたいです！'],
+  good:[
+   {t:'ぜひ！声で話せるの嬉しいです😊 明日の夜9時くらいはどうですか？30分くらいで。', f:'前向きな返事＋具体的な日時と長さ。相手は安心して答えられます。'},
+   {t:'いいですね！平日なら夜8時以降、週末ならいつでも大丈夫です。{sei}さんのご都合はいかがですか？', f:'候補を出して相手に合わせる、調整上手な返事です。'}],
+  ok:[
+   {t:'いいですよ。', f:'前向きですが、具体的な日時を出すと話が進みます。'}],
+  bad:[
+   {t:'電話はちょっと苦手で…LINEでよくないですか？', f:'苦手でも断り方に配慮を。「緊張するので短めなら」など代案を出しましょう。'},
+   {t:'今かけていいですか？（直後に着信）', f:'相手の都合を確認せずにかけるのはNGです。'}],
+  re:{good:['ありがとうございます！楽しみにしてます😊'], ok:['では、また日にち決めましょう！'], bad:['あ、えっと…わかりました。']}}
+];
+
+const DATE = [
+ {title:'デートに誘う', ax:['sekkyoku','hairyo'],
+  sit:'やり取りが続いています。次のデートに誘ってみましょう。',
+  msg:['{food}の美味しいお店、近くにあるらしいんですよ〜'],
+  good:[
+   {t:'そうなんですね！もしよければ、今度一緒に行きませんか？来週の土曜か日曜のお昼はいかがでしょう😊', f:'相手の話題から自然にデートへ。日程の候補を2つ出す、答えやすい誘い方の見本です。'},
+   {t:'行ってみたいです！{sei}さんと一緒だと楽しそう。再来週あたり、ランチでご都合のいい日ありますか？', f:'気持ちを伝えながら、昼のランチという軽い提案で好印象です。'}],
+  ok:[
+   {t:'今度行きましょう！', f:'前向きですが、日程が決まらないと流れがち。具体的な候補を出しましょう。'}],
+  bad:[
+   {t:'じゃあ今週末の夜、飲みに行きましょう！2軒目も行きましょうね🍻', f:'序盤のデートは昼間・短時間が基本。夜のお酒の誘いは警戒されます。'},
+   {t:'へえ〜。', f:'相手からのサインを見逃しています。誘うチャンスでした。'}],
+  re:{good:['ぜひ！土曜のお昼が空いてます😊 楽しみです！'], ok:['いいですね！また予定合わせましょう。'], bad:['あ…そうですね、また考えておきます。']}},
+ {title:'デートに誘われたら', ax:['sekkyoku','hairyo'],
+  msg:['この前お話しした{hobby}、今度一緒にどうですか？笑'],
+  good:[
+   {t:'ぜひ行きたいです！初心者ですが大丈夫ですか？😊 来週の土日ならどちらも空いてます！', f:'即答の「行きたい」＋空いている日。相手は安心して計画を進められます。'},
+   {t:'嬉しいです！ちょうど興味ありました。日程は{sei}さんのご都合に合わせますので、候補をいただけますか？', f:'嬉しさを伝え、調整にも協力的です。'}],
+  ok:[
+   {t:'考えておきます。', f:'迷っている印象を与え、相手は不安になります。行く気があるなら即答で。'}],
+  bad:[
+   {t:'うーん、{hobby}はあまり興味ないですね…', f:'興味がなくても、別の案を出して前向きに返しましょう。'},
+   {t:'いいですよ。その日は朝から晩まで一日中デートにしましょう！', f:'序盤のデートは2〜3時間が目安です。長時間は相手が疲れます。'}],
+  re:{good:['よかった！じゃあ土曜日にしましょう😊 楽しみです！'], ok:['わかりました、お返事待ってますね。'], bad:['そうですか…わかりました。']}},
+ {title:'デートの日程調整', ax:['sekkyoku','tempo'],
+  sit:'2回目のデートの日程を調整しています。',
+  msg:['来週ならいつが空いてますか？'],
+  good:[
+   {t:'来週は土曜の午後か、日曜のお昼が空いています！{sei}さんはいかがですか？', f:'候補を複数出して相手に選んでもらう。調整がスムーズです。'},
+   {t:'日曜日が一日空いてます！お昼に{food}のお店はいかがでしょう？お店はこちらで探しておきますね。', f:'日程と行き先まで提案できていて、頼もしい印象です。'}],
+  ok:[
+   {t:'いつでも大丈夫です！', f:'合わせる姿勢は良いですが、相手が決める負担が増えます。候補を出すとさらに◎。'}],
+  bad:[
+   {t:'来週は忙しくて…再来週も微妙かもです。また連絡します。', f:'代案がないと「脈なし」と受け取られます。'},
+   {t:'月曜の夜22時からなら空いてます！', f:'夜遅い時間の提案は相手の負担に。序盤は昼〜夕方にしましょう。'}],
+  re:{good:['じゃあ日曜のお昼でお願いします😊 楽しみです！'], ok:['では日曜のお昼はどうですか？'], bad:['そうですか…わかりました。']}}
+];
+
+const CLOSE = [
+ {title:'おやすみの挨拶', ax:['hairyo','tempo'],
+  msg:['明日早いので今日はこのへんで！楽しかったです、おやすみなさい🌙'],
+  good:[
+   {t:'遅くまでありがとうございました！私も楽しかったです。明日もお仕事頑張ってくださいね。おやすみなさい🌙', f:'お礼＋楽しかった＋相手への応援。気持ちよく終われます。'},
+   {t:'こちらこそありがとうございました😊 ゆっくり休んでくださいね。おやすみなさい！', f:'相手の合図を尊重した、すっきりした締め方です。'}],
+  ok:[
+   {t:'おやすみなさい。', f:'問題はありませんが、「楽しかったです」を添えると次の連絡も楽しみになります。'}],
+  bad:[
+   {t:'え、もう寝るんですか？もう少しだけ話しませんか？', f:'相手の「終わり」の合図は尊重しましょう。名残惜しさは「また明日」で伝えて。'},
+   {t:'おやすみなさい！あ、それと最後に聞きたいことがあって…（新しい質問を3つ送る）', f:'終わりの合図の後に質問を送ると、相手は寝られません。'}],
+  re:{good:['ありがとうございます😊 おやすみなさい🌙'], ok:['おやすみなさい🌙'], bad:['ごめんなさい、また明日返しますね…💦']}},
+ {title:'会話の締めくくり', ax:['hairyo','tempo'],
+  sit:'夜も遅くなってきました。あなたから会話を締めくくりましょう。',
+  good:[
+   {t:'もうこんな時間ですね！今日もたくさんお話しできて楽しかったです😊 また明日連絡しますね。おやすみなさい🌙', f:'楽しかった＋次の約束＋挨拶。次の連絡も楽しみになる終わり方です。'},
+   {t:'そろそろ寝ますね。{hobby}のお話、続きはまた聞かせてください！おやすみなさい。', f:'次の話題を予告して終わると、会話がつながります。'}],
+  ok:[
+   {t:'じゃ、寝ます。', f:'急に切り上げた印象です。一言の気遣いを添えましょう。'}],
+  bad:[
+   {t:'（返信せずにそのまま寝る）', act:true, f:'無言で終わると、相手は「何か悪いこと言ったかな」と不安になります。', r:'（翌朝）昨日は寝ちゃいましたかね？笑'},
+   {t:'眠いので寝ます。明日は返信できないかもです。', f:'次につながらない終わり方です。'}],
+  re:{good:['はい！私も楽しかったです😊 おやすみなさい🌙'], ok:['はい、おやすみなさい。'], bad:['わかりました…おやすみなさい。']}}
+];
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const rand = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// A wait from an abandoned session rejects with 'stale' so its chat flow stops.
+const wait = ms => { const s = S; return new Promise((res, rej) => setTimeout(() => S === s ? res() : rej('stale'), RM ? Math.min(ms,120) : ms)); };
+addEventListener('unhandledrejection', e => { if (e.reason === 'stale') e.preventDefault(); });
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fill = (s,p) => s ? s.replace(/\{(\w+)\}/g, (m,k) => p[k] ?? m) : s;
+const pad = n => String(n).padStart(2,'0');
+const WD = ['日','月','火','水','木','金','土'];
+const store = {
+  get(){ try { return JSON.parse(localStorage.getItem('line-practice-history') || '[]'); } catch(e){ return []; } },
+  add(x){ try { const h = this.get(); h.unshift(x); localStorage.setItem('line-practice-history', JSON.stringify(h.slice(0,10))); } catch(e){} }
+};
+
+let S = null;
+
+function show(id){ for (const s of ['start','chat','report']) $('#'+s).hidden = s !== id; }
+
+function renderStart(){
+  $('#axesMini').innerHTML = Object.values(AX).map(a => `<span class="chip">${a}</span>`).join('');
+  const h = store.get();
+  $('#historyPanel').hidden = !h.length;
+  $('#historyList').innerHTML = h.slice(0,5).map(x =>
+    `<li><span>${esc(x.date)}　${esc(x.partner)}</span><b>${x.score}点（${esc(x.rank)}）</b></li>`).join('');
+  show('start');
+}
+
+function buildSession(gender, hints, persona){
+  const p = persona || pick(PERSONAS[gender]);
+  const raw = [pick(OPEN), ...shuffle(MID).slice(0,5), pick(DATE), pick(CLOSE)];
+  const rounds = raw.map(r => ({
+    ...r,
+    m: r.msg ? fill(pick(r.msg), p) : null,
+    opts: shuffle([{...pick(r.good),g:2},{...pick(r.ok),g:1},{...pick(r.bad),g:0}])
+      .map(o => ({...o, t:fill(o.t,p), f:fill(o.f,p), r:fill(o.r,p)}))
+  }));
+  const now = new Date();
+  return {gender, hints, p, rounds, idx:0, log:[], aff:50, affHist:[50],
+          base:new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+          day:0, min:rand(19*60+30, 20*60+40), shownDay:-1, quitArmed:false};
+}
+
+function clockStr(){ const m = ((S.min % 1440)+1440)%1440; return `${Math.floor(m/60)}:${pad(m%60)}`; }
+function dateStr(){ const d = new Date(S.base); d.setDate(d.getDate()+S.day); return `${d.getMonth()+1}/${d.getDate()}(${WD[d.getDay()]})`; }
+
+/* ---------- chat rendering ---------- */
+const log = () => $('#log');
+function scrollDown(){ const l = log(); l.scrollTo({top:l.scrollHeight, behavior: RM ? 'auto' : 'smooth'}); }
+function append(el){ log().appendChild(el); scrollDown(); return el; }
+function div(cls, html){ const d = document.createElement('div'); d.className = cls; d.innerHTML = html; return d; }
+
+function ensureDate(){ if (S.shownDay !== S.day){ S.shownDay = S.day; append(div('date', dateStr())); } }
+function addThem(text){
+  append(div('row them', `<div class="avatar" aria-hidden="true">${esc(S.p.mei[0])}</div><div class="bubble">${esc(text)}</div><div class="meta">${clockStr()}</div>`));
+}
+function addMe(text){
+  return append(div('row me', `<div class="bubble">${esc(text)}</div><div class="meta"><span class="read"></span><br>${clockStr()}</div>`));
+}
+function addSys(text){ append(div('sys', esc(text))); }
+function addHint(o){
+  append(div('hint', `<span class="grade g${o.g}">${GRADE[o.g]}</span><span>${esc(o.f)}</span>`));
+}
+async function typing(ms){
+  const t = append(div('row them', `<div class="avatar" aria-hidden="true">${esc(S.p.mei[0])}</div><div class="bubble typing" aria-label="入力中"><i></i><i></i><i></i></div>`));
+  await wait(ms); t.remove();
+}
+function updateMeter(){
+  $('#affNum').textContent = S.aff;
+  $('#affBar').style.width = S.aff + '%';
+}
+function setDock(mode){
+  const c = $('#choices');
+  if (mode === 'wait'){ $('#dockLabel').textContent = '相手の返信を待っています…'; c.innerHTML = `<div class="waiting">・・・</div>`; }
+}
+
+async function playRound(i){
+  S.idx = i;
+  const r = S.rounds[i];
+  if (i > 0){
+    if (r.time){
+      const [h,m] = r.time.split(':').map(Number);
+      if (S.min > h*60+m) S.day++;
+      S.min = h*60+m;
+    } else if (Math.random() < .6){ S.day++; S.min = rand(19*60, 21*60+20); }
+    else S.min += rand(6,30);
+  }
+  $('#prog').style.width = (i / S.rounds.length * 100) + '%';
+  $('#roundLabel').textContent = `${i+1} / ${S.rounds.length}`;
+  setDock('wait');
+  ensureDate();
+  if (r.sit){ await wait(350); addSys(r.sit); }
+  if (r.m){ await typing(700 + Math.min(r.m.length*14, 900)); addThem(r.m); }
+  await wait(250);
+  $('#dockLabel').textContent = r.m ? '返信を選んでください' : '送るメッセージを選んでください';
+  const c = $('#choices'); c.innerHTML = '';
+  r.opts.forEach((o) => {
+    const b = document.createElement('button');
+    b.className = 'choice'; b.type = 'button'; b.textContent = o.t;
+    b.addEventListener('click', () => choose(o), {once:true});
+    c.appendChild(b);
+  });
+  c.scrollTop = 0;
+}
+
+async function choose(o){
+  const r = S.rounds[S.idx];
+  setDock('wait');
+  S.min += rand(1,5);
+  let me = null;
+  if (o.act) addSys('あなた：' + o.t.replace(/^（|）$/g,''));
+  else me = addMe(o.t);
+  const delta = o.g === 2 ? rand(7,10) : o.g === 1 ? rand(0,2) : -rand(8,12);
+  S.aff = Math.max(0, Math.min(100, S.aff + delta));
+  S.affHist.push(S.aff);
+  S.log.push({r, o});
+  updateMeter();
+  if (S.hints){ await wait(300); addHint(o); }
+  await wait(700);
+  if (me) me.querySelector('.read').textContent = '既読';
+  S.min += rand(1,9);
+  const reply = o.r || fill(pick(r.re[['bad','ok','good'][o.g]]), S.p);
+  await typing(800 + Math.min(reply.length*12, 900));
+  addThem(reply);
+  if (S.idx + 1 < S.rounds.length){ await wait(900); playRound(S.idx + 1); }
+  else finish();
+}
+
+function finish(){
+  $('#prog').style.width = '100%';
+  addSys('練習はここまでです。おつかれさまでした！');
+  $('#dockLabel').textContent = '8往復が終わりました';
+  $('#choices').innerHTML = `<button class="btn btn-primary" id="toReport" type="button">振り返りレポートを見る</button>`;
+  $('#toReport').addEventListener('click', renderReport);
+  const res = calc();
+  const d = new Date();
+  store.add({date:`${d.getMonth()+1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`, partner:`${S.p.sei}さん`, score:res.score, rank:res.rank.k});
+}
+
+/* ---------- report ---------- */
+function calc(){
+  const ax = {}; for (const k in AX) ax[k] = {got:0, max:0};
+  let got = 0;
+  S.log.forEach(({r,o}) => { got += o.g; r.ax.forEach(k => { ax[k].got += o.g; ax[k].max += 2; }); });
+  const score = Math.round(got / (S.log.length*2) * 100);
+  const rank = score >= 90 ? {k:'S', t:'とても自然なやり取りです。この調子で実際のLINEも楽しみましょう。'}
+    : score >= 75 ? {k:'A', t:'好印象です。△や○の場面を見直せば、さらに安心感のあるやり取りになります。'}
+    : score >= 55 ? {k:'B', t:'まずまずです。「リアクション → 答える → 質問を1つ」の型を意識してみましょう。'}
+    : {k:'C', t:'今回はつまずきが多めでした。下の振り返りを読んで、もう一度挑戦してみましょう。'};
+  return {score, rank, ax};
+}
+
+function spark(h){
+  const W = 320, H = 96, L = 26, R = 10, T = 10, B = 22;
+  const x = i => L + i*(W-L-R)/(h.length-1);
+  const y = v => T + (100-v)*(H-T-B)/100;
+  const pts = h.map((v,i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const area = `${x(0)},${y(0)} ${pts} ${x(h.length-1)},${y(0)}`;
+  const last = h[h.length-1];
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" role="img" aria-label="好感度の推移：50から${last}">
+    ${[0,50,100].map(v => `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1" ${v===50?'stroke-dasharray="3 3"':''}/><text x="${L-6}" y="${y(v)+3}" text-anchor="end">${v}</text>`).join('')}
+    <polyline points="${pts}" fill="none" stroke="var(--heart)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${h.map((v,i) => `<circle cx="${x(i)}" cy="${y(v)}" r="${i===h.length-1?4:2.4}" fill="${i===h.length-1?'var(--heart)':'var(--card)'}" stroke="var(--heart)" stroke-width="1.6"/>`).join('')}
+    <text x="${x(0)}" y="${H-6}" text-anchor="start">スタート</text>
+    <text x="${x(h.length-1)}" y="${H-6}" text-anchor="end">${h.length-1}往復目</text>
+  </svg>`;
+}
+
+function renderReport(){
+  const {score, rank, ax} = calc();
+  const counts = [0,0,0]; S.log.forEach(({o}) => counts[o.g]++);
+  const ranked = Object.keys(AX).filter(k => ax[k].max).map(k => ({k, r: ax[k].got/ax[k].max})).sort((a,b) => a.r-b.r);
+  const weak = ranked.filter(a => a.r < 1).slice(0,2);
+  const d = new Date();
+
+  const axisRows = Object.keys(AX).map(k => {
+    const a = ax[k];
+    if (!a.max) return `<div class="axis none"><span>${AX[k]}</span><span style="font-size:12px">今回は出題なし</span><b>—</b></div>`;
+    const pct = Math.round(a.got/a.max*100);
+    return `<div class="axis"><span>${AX[k]}</span><div class="axis-bar"><i class="${pct<60?'low':''}" style="width:${pct}%"></i></div><b>${pct}%</b></div>`;
+  }).join('');
+
+  const tips = weak.length
+    ? weak.map(w => `<div class="tip"><b>${AX[w.k]}を伸ばすには</b><span>${TIPS[w.k]}</span></div>`).join('')
+    : `<div class="tip"><b>すべての力でパーフェクトです</b><span>ヒントをオフにしたり、別のお相手で練習したりして、どんな話題でも同じように返せるか試してみましょう。</span></div>`;
+
+  const review = S.log.map(({r,o},i) => {
+    const best = o.g < 2 ? r.opts.find(x => x.g === 2) : null;
+    return `<li class="rv">
+      <div class="rv-head"><h3><span class="n">${i+1}</span>${esc(r.title)}</h3><span class="grade g${o.g}">${GRADE[o.g].split(' ')[0]}</span></div>
+      ${r.m ? `<div class="q">${esc(r.m)}</div>` : `<div class="q">${esc(r.sit)}</div>`}
+      <div><span class="lbl">あなたの返信</span><div class="ans">${esc(o.t)}</div></div>
+      <div class="muted">${esc(o.f)}</div>
+      ${best ? `<div class="better"><span class="lbl">こう返すと◎</span>${esc(best.t)}</div>` : ''}
+    </li>`;
+  }).join('');
+
+  const summary = [
+    '【仮交際LINE練習 結果】',
+    `日時：${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`,
+    `練習相手（架空）：${S.p.sei} ${S.p.mei}さん`,
+    `スコア：${score}点（ランク${rank.k}）　◎${counts[2]} ○${counts[1]} △${counts[0]}`,
+    `好感度：50 → ${S.aff}`,
+    ...Object.keys(AX).filter(k => ax[k].max).map(k => `・${AX[k]}：${Math.round(ax[k].got/ax[k].max*100)}%`),
+    '',
+    ...S.log.map(({r,o},i) => `${i+1}. ${r.title}　${GRADE[o.g].split(' ')[0]}`)
+  ].join('\n');
+
+  $('#reportBody').innerHTML = `
+    <div class="hero">
+      <span class="eyebrow">振り返りレポート</span>
+      <h1 style="font-size:26px">${esc(S.p.sei)}さんとの練習結果</h1>
+      <p>${d.getMonth()+1}月${d.getDate()}日 ・ ${S.log.length}往復　◎${counts[2]}　○${counts[1]}　△${counts[0]}</p>
+    </div>
+    <div class="score-card">
+      <div class="score-num">${score}<small>点</small></div>
+      <div><span class="rank"><i>${rank.k}</i>ランク</span><p>${rank.t}</p></div>
+    </div>
+    <div class="panel">
+      <h2 class="section-title">5つの力 <small>選んだ返信から算出</small></h2>
+      <div class="stack" style="gap:12px">${axisRows}</div>
+    </div>
+    <div class="panel">
+      <h2 class="section-title">好感度の推移 <small>50 → ${S.aff}</small></h2>
+      ${spark(S.affHist)}
+    </div>
+    <div class="stack" style="gap:10px">
+      <h2 class="section-title">次に意識すること</h2>
+      ${tips}
+    </div>
+    <div class="stack" style="gap:10px">
+      <h2 class="section-title">1往復ずつの振り返り <small>△・○には◎の例つき</small></h2>
+      <ol class="review">${review}</ol>
+    </div>
+    <div class="panel">
+      <h2 class="section-title">担当カウンセラーに共有</h2>
+      <p class="muted" style="margin:0;font-size:13.5px">結果をコピーして、カウンセラーとのLINEに貼り付けられます。</p>
+      <button class="btn btn-ghost" id="copyBtn" type="button">結果をコピー</button>
+      <textarea id="copyArea" readonly hidden></textarea>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary wide" id="againNew" type="button">別のお相手で練習する</button>
+      <button class="btn btn-ghost" id="againSame" type="button">同じお相手でもう一度</button>
+      <button class="btn btn-ghost" id="toTop" type="button">トップへ</button>
+    </div>`;
+  show('report');
+  $('#reportBody').scrollTop = 0;
+
+  $('#copyBtn').addEventListener('click', e => {
+    const btn = e.currentTarget, ta = $('#copyArea');
+    ta.value = summary;
+    const done = () => { btn.textContent = 'コピーしました'; setTimeout(() => btn.textContent = '結果をコピー', 2000); };
+    const fallback = () => { ta.hidden = false; ta.focus(); ta.select(); btn.textContent = '下の文章を選択してコピーしてください'; };
+    try { navigator.clipboard.writeText(summary).then(done, fallback); } catch(err){ fallback(); }
+  });
+  $('#againNew').addEventListener('click', () => begin());
+  $('#againSame').addEventListener('click', () => begin(S.p));
+  $('#toTop').addEventListener('click', renderStart);
+}
+
+/* ---------- start / quit ---------- */
+function begin(persona){
+  const gender = persona ? S.gender : document.querySelector('input[name=gender]:checked').value;
+  const hints = persona ? S.hints : $('#hints').checked;
+  S = buildSession(gender, hints, persona);
+  $('#headAvatar').textContent = S.p.mei[0];
+  $('#headName').textContent = `${S.p.sei} ${S.p.mei}さん`;
+  $('#headSub').textContent = `${S.p.age}歳・${S.p.job}・趣味は${S.p.hobby}`;
+  $('#quitBtn').textContent = 'やめる';
+  log().innerHTML = '';
+  updateMeter();
+  show('chat');
+  addSys(`${S.p.sei}さんとのお見合いが終わり、仮交際がはじまりました。（お相手は練習用の架空の人物です）`);
+  playRound(0);
+}
+
+$('#startBtn').addEventListener('click', () => begin());
+$('#quitBtn').addEventListener('click', e => {
+  if (!S.quitArmed){
+    S.quitArmed = true; e.currentTarget.textContent = '本当にやめる？';
+    const armed = S; setTimeout(() => { if (S === armed){ S.quitArmed = false; $('#quitBtn').textContent = 'やめる'; } }, 3000);
+    return;
+  }
+  S = null; renderStart();
+});
+
+renderStart();
+</script>
