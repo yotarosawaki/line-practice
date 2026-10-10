@@ -1,4 +1,9 @@
-<title>仮交際LINE練習</title>
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="結婚相談所 CodeForMarriage の新規会員さん向け、仮交際LINEの練習シミュレーター">
+<title>CodeForMarriage 仮交際LINE練習</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap">
@@ -26,7 +31,10 @@
   --good:#5cc48a; --ok:#e0b04a; --bad:#ef7a72; --heart:#ef7d9a;
   --good-soft:#1c3327; --ok-soft:#332a14; --bad-soft:#3a1f1d; color-scheme:dark}
 
+[hidden]{display:none!important}
+*,*::before,*::after{box-sizing:border-box}
 html,body{height:100%}
+body{margin:0}
 body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65}
 #app{max-width:520px;margin:0 auto;height:100%;background:var(--paper);display:flex;flex-direction:column}
 .screen{flex:1;min-height:0;display:flex;flex-direction:column}
@@ -148,79 +156,185 @@ button:focus-visible,input:focus-visible+label{outline:3px solid var(--accent);o
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .actions .wide{grid-column:1/-1}
 #copyArea{width:100%;min-height:120px;font:inherit;font-size:12.5px;border-radius:10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px}
+
+/* ---------- brand ---------- */
+.brandbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--card)}
+.brand{display:inline-flex;align-items:center;gap:8px}
+.brand-mark{width:30px;height:21px;flex:none}
+.wordmark{font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:.01em;color:var(--ink)}
+.wordmark span{color:var(--heart)}
+.brand-tag{font-size:12px;color:var(--muted);white-space:nowrap}
+.foot{margin-top:28px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);text-align:center;line-height:1.7}
+.peek-note{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12.5px;color:var(--ink);margin-top:4px}
+
+/* ---------- start grid (mobile: one column in reading order) ---------- */
+.start-grid{display:flex;flex-direction:column;gap:16px}
+.start-grid .col{display:contents}
+.o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}.o6{order:6}.o7{order:7}.o8{order:8}
+
+/* ---------- chat side panel ---------- */
+.chat-main{flex:1;min-height:0;display:flex;flex-direction:column}
+.side{display:none}
+.choice .key{display:none}
+.avatar-lg{width:56px;height:56px;font-size:24px}
+.profile-top{display:flex;align-items:center;gap:12px}
+.profile-top b{font-family:var(--f-display);font-size:18px;display:block}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0;font-size:13.5px}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0}
+.aff-big{display:flex;justify-content:space-between;align-items:baseline}
+.aff-big b{font-family:var(--f-display);font-size:30px;color:var(--heart);font-variant-numeric:tabular-nums}
+.meter-bar.wide{width:100%;height:10px}
+.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px;counter-reset:st}
+.steps li{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;font-size:13px;padding:6px 8px;border-radius:8px;color:var(--muted)}
+.steps li::before{counter-increment:st;content:counter(st);font-variant-numeric:tabular-nums;font-size:11.5px;text-align:center}
+.steps li.done{color:var(--ink)}
+.steps li.now{background:var(--accent-soft);color:var(--ink);font-weight:700}
+.kbd-note{font-size:12px;color:var(--muted);text-align:center;margin:0}
+kbd{font-family:var(--f-body);font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;background:var(--card);color:var(--ink)}
+
+/* ---------- report grid ---------- */
+.rep-grid{display:flex;flex-direction:column;gap:16px}
+.rep-grid .col{display:contents}
+
+/* ---------- PC ---------- */
+@media (min-width: 960px){
+  body{font-size:15.5px}
+  #app{max-width:1180px;border-inline:1px solid var(--line)}
+  .brandbar{padding:14px 32px}
+  .wordmark{font-size:20px}
+  .brand-mark{width:36px;height:25px}
+  .brand-tag{font-size:13px}
+  .scroll{padding:40px 40px 48px}
+  .start-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:32px;align-items:start}
+  .start-grid .col{display:flex;flex-direction:column;gap:20px;min-width:0}
+  .hero h1{font-size:46px}
+  .hero p{font-size:16px;max-width:34em}
+  .phone-peek{padding:24px;gap:10px}
+  .peek{font-size:14.5px;max-width:70%}
+  #chat:not([hidden]){display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;padding:24px 32px}
+  .chat-main{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--card)}
+  .side{display:flex;flex-direction:column;gap:14px;overflow-y:auto;min-height:0}
+  .log{padding:20px 28px}
+  .bubble{max-width:460px}
+  .dock{padding:14px 28px 18px}
+  .choices{max-height:40vh}
+  .choice{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+  .choice .key{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12.5px}
+  .rep-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:32px;align-items:start}
+  .rep-grid .col{display:flex;flex-direction:column;gap:20px;min-width:0}
+  .score-num{font-size:68px}
+}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 
 <div id="app">
+  <header class="brandbar">
+    <span class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 22" aria-hidden="true"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--accent)" stroke-width="2.6"/><circle cx="21" cy="11" r="8" fill="none" stroke="var(--heart)" stroke-width="2.6"/></svg>
+      <span class="wordmark">Code<span>For</span>Marriage</span>
+    </span>
+    <span class="brand-tag">仮交際LINE練習</span>
+  </header>
+
   <!-- START -->
   <section class="screen" id="start">
-    <div class="scroll stack">
-      <div class="hero">
-        <span class="eyebrow">新規会員さん向け ・ 仮交際スタート期</span>
-        <h1>仮交際LINE練習</h1>
-        <p>お見合い後のやり取りを、3つの選択肢から選んで練習します。1回8往復・約5分。終わると振り返りレポートが出ます。</p>
-      </div>
+    <div class="scroll">
+      <div class="start-grid">
+        <div class="col">
+          <div class="hero o1">
+            <span class="eyebrow">CodeForMarriage 新規会員さん向け ・ 仮交際スタート期</span>
+            <h1>仮交際LINE練習</h1>
+            <p>お見合い後のやり取りを、3つの選択肢から選んで練習します。1回8往復・約5分。終わると振り返りレポートが出ます。</p>
+          </div>
 
-      <div class="phone-peek" aria-hidden="true">
-        <div class="peek them">今日は駅の近くに新しくできたカフェに行ってきました😊 お休みは何してましたか？</div>
-        <div class="peek me">いいですね！どんなお店でしたか？私は友人とランチに行ってきました。</div>
-      </div>
+          <div class="phone-peek o2" aria-hidden="true">
+            <div class="peek them">今日は駅の近くに新しくできたカフェに行ってきました😊 お休みは何してましたか？</div>
+            <div class="peek me">いいですね！どんなお店でしたか？私は友人とランチに行ってきました。</div>
+            <div class="peek-note"><span class="grade g2">◎ いい返信</span> 反応 → 答える → 質問を返す、の3点セット</div>
+          </div>
 
-      <div class="panel">
-        <h2>練習の設定</h2>
-        <div>
-          <div class="muted" style="font-size:13px;margin-bottom:6px">お相手</div>
-          <div class="seg" role="radiogroup" aria-label="お相手">
-            <input type="radio" name="gender" id="g-f" value="f" checked><label for="g-f">女性</label>
-            <input type="radio" name="gender" id="g-m" value="m"><label for="g-m">男性</label>
+          <div class="panel o4">
+            <h2>この練習で身につけたい5つの力</h2>
+            <div class="axes-mini" id="axesMini"></div>
+            <ul class="rules">
+              <li><b>基本の型</b><span>相手の話にリアクション → 聞かれたことに答える → 質問を1つ返す</span></li>
+              <li><b>長さ</b><span>1通は3〜5行。相手の文量に合わせる</span></li>
+              <li><b>序盤は控える</b><span>お金・過去の恋愛・結婚後の条件の話</span></li>
+              <li><b>誘い方</b><span>相手の話題から自然に。日時の候補を2つ出す</span></li>
+            </ul>
           </div>
         </div>
-        <div class="toggle">
-          <div><b>その場でヒントを出す</b><small>選んだ直後に ◎ ○ △ と一言アドバイスを表示します。慣れてきたらオフにして、レポートだけで確認しましょう。</small></div>
-          <label class="switch"><input type="checkbox" id="hints" checked aria-label="その場でヒントを出す"><span></span></label>
+
+        <div class="col">
+          <div class="panel o3">
+            <h2>練習の設定</h2>
+            <div>
+              <div class="muted" style="font-size:13px;margin-bottom:6px">お相手</div>
+              <div class="seg" role="radiogroup" aria-label="お相手">
+                <input type="radio" name="gender" id="g-f" value="f" checked><label for="g-f">女性</label>
+                <input type="radio" name="gender" id="g-m" value="m"><label for="g-m">男性</label>
+              </div>
+            </div>
+            <div class="toggle">
+              <div><b>その場でヒントを出す</b><small>選んだ直後に ◎ ○ △ と一言アドバイスを表示します。慣れてきたらオフにして、レポートだけで確認しましょう。</small></div>
+              <label class="switch"><input type="checkbox" id="hints" checked aria-label="その場でヒントを出す"><span></span></label>
+            </div>
+            <button class="btn btn-primary" id="startBtn">練習をはじめる</button>
+          </div>
+
+          <div class="panel o5" id="historyPanel" hidden>
+            <h2>これまでの記録 <small class="muted" style="font-family:var(--f-body);font-weight:400;font-size:12px">この端末だけに保存</small></h2>
+            <ul class="history" id="historyList"></ul>
+          </div>
+
+          <p class="notice o6">登場するお相手・会話はすべて練習用の架空のものです。毎回お相手と話題の組み合わせが変わるので、何度でも練習できます。実際の個人名や連絡先は入力しないでください。</p>
         </div>
-        <button class="btn btn-primary" id="startBtn">練習をはじめる</button>
       </div>
-
-      <div class="panel">
-        <h2>この練習で身につけたい5つの力</h2>
-        <div class="axes-mini" id="axesMini"></div>
-        <ul class="rules">
-          <li><b>基本の型</b><span>相手の話にリアクション → 聞かれたことに答える → 質問を1つ返す</span></li>
-          <li><b>長さ</b><span>1通は3〜5行。相手の文量に合わせる</span></li>
-          <li><b>序盤は控える</b><span>お金・過去の恋愛・結婚後の条件の話</span></li>
-          <li><b>誘い方</b><span>相手の話題から自然に。日時の候補を2つ出す</span></li>
-        </ul>
-      </div>
-
-      <div class="panel" id="historyPanel" hidden>
-        <h2>これまでの記録 <small class="muted" style="font-family:var(--f-body);font-weight:400;font-size:12px">この端末だけに保存</small></h2>
-        <ul class="history" id="historyList"></ul>
-      </div>
-
-      <p class="notice">登場するお相手・会話はすべて練習用の架空のものです。毎回お相手と話題の組み合わせが変わるので、何度でも練習できます。実際の個人名や連絡先は入力しないでください。</p>
+      <footer class="foot">このシミュレーターは、結婚相談所 CodeForMarriage が会員さんのために制作した練習ツールです。<br>© 2026 CodeForMarriage</footer>
     </div>
   </section>
 
   <!-- CHAT -->
   <section class="screen" id="chat" hidden>
-    <header class="chat-head">
-      <div class="avatar" id="headAvatar">美</div>
-      <div class="who"><b id="headName">高橋 美咲さん</b><span id="headSub">29歳・看護師</span></div>
-      <div class="meter" aria-label="好感度"><span>好感度 <b id="affNum">50</b></span><div class="meter-bar"><i id="affBar" style="width:50%"></i></div></div>
-      <button class="quit" id="quitBtn">やめる</button>
-    </header>
-    <div class="progress"><i id="prog" style="width:0"></i></div>
-    <div class="log" id="log" aria-live="polite"></div>
-    <div class="dock" id="dock">
-      <div class="dock-label"><span id="dockLabel">送るメッセージを選んでください</span><span id="roundLabel"></span></div>
-      <div class="choices" id="choices"></div>
+    <div class="chat-main">
+      <header class="chat-head">
+        <div class="avatar" id="headAvatar">美</div>
+        <div class="who"><b id="headName">高橋 美咲さん</b><span id="headSub">29歳・看護師</span></div>
+        <div class="meter" aria-label="好感度"><span>好感度 <b id="affNum">50</b></span><div class="meter-bar"><i id="affBar" style="width:50%"></i></div></div>
+        <button class="quit" id="quitBtn">やめる</button>
+      </header>
+      <div class="progress"><i id="prog" style="width:0"></i></div>
+      <div class="log" id="log" aria-live="polite"></div>
+      <div class="dock" id="dock">
+        <div class="dock-label"><span id="dockLabel">送るメッセージを選んでください</span><span id="roundLabel"></span></div>
+        <div class="choices" id="choices"></div>
+      </div>
     </div>
+    <aside class="side" aria-label="練習の状況">
+      <div class="panel profile">
+        <div class="profile-top">
+          <div class="avatar avatar-lg" id="sideAvatar">美</div>
+          <div><span class="lbl">今回のお相手（架空）</span><b id="sideName">高橋 美咲さん</b></div>
+        </div>
+        <dl class="facts" id="sideFacts"></dl>
+        <p class="muted" style="margin:0;font-size:12.5px">お見合いで聞いた趣味や好きな食べ物は、返信のヒントになります。</p>
+      </div>
+      <div class="panel">
+        <div class="aff-big"><span class="lbl">好感度</span><b id="sideAff">50</b></div>
+        <div class="meter-bar wide"><i id="sideAffBar" style="width:50%"></i></div>
+      </div>
+      <div class="panel">
+        <h2 class="section-title">8往復の流れ <small id="sideCount">1 / 8</small></h2>
+        <ol class="steps" id="sideSteps"></ol>
+      </div>
+      <p class="kbd-note">キーボードの <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> でも選べます</p>
+    </aside>
   </section>
 
   <!-- REPORT -->
   <section class="screen" id="report" hidden>
-    <div class="scroll stack" id="reportBody"></div>
+    <div class="scroll" id="reportBody"></div>
   </section>
 </div>
 
@@ -607,6 +721,19 @@ async function typing(ms){
 function updateMeter(){
   $('#affNum').textContent = S.aff;
   $('#affBar').style.width = S.aff + '%';
+  $('#sideAff').textContent = S.aff;
+  $('#sideAffBar').style.width = S.aff + '%';
+}
+// PC side panel: the 8 rounds, with grades for finished ones and the current one highlighted.
+function renderSteps(){
+  $('#sideCount').textContent = `${Math.min(S.idx+1, S.rounds.length)} / ${S.rounds.length}`;
+  $('#sideSteps').innerHTML = S.rounds.map((r,i) => {
+    const done = S.log[i];
+    const cls = done ? 'done' : i === S.idx ? 'now' : '';
+    const title = done || i === S.idx ? esc(r.title) : '？';
+    const chip = done ? `<span class="grade g${done.o.g}">${GRADE[done.o.g].split(' ')[0]}</span>` : '';
+    return `<li class="${cls}"><span>${title}</span>${chip}</li>`;
+  }).join('');
 }
 function setDock(mode){
   const c = $('#choices');
@@ -626,6 +753,7 @@ async function playRound(i){
   }
   $('#prog').style.width = (i / S.rounds.length * 100) + '%';
   $('#roundLabel').textContent = `${i+1} / ${S.rounds.length}`;
+  renderSteps();
   setDock('wait');
   ensureDate();
   if (r.sit){ await wait(350); addSys(r.sit); }
@@ -633,9 +761,10 @@ async function playRound(i){
   await wait(250);
   $('#dockLabel').textContent = r.m ? '返信を選んでください' : '送るメッセージを選んでください';
   const c = $('#choices'); c.innerHTML = '';
-  r.opts.forEach((o) => {
+  r.opts.forEach((o, n) => {
     const b = document.createElement('button');
-    b.className = 'choice'; b.type = 'button'; b.textContent = o.t;
+    b.className = 'choice'; b.type = 'button';
+    b.innerHTML = `<span class="key" aria-hidden="true">${n+1}</span><span>${esc(o.t)}</span>`;
     b.addEventListener('click', () => choose(o), {once:true});
     c.appendChild(b);
   });
@@ -654,6 +783,7 @@ async function choose(o){
   S.affHist.push(S.aff);
   S.log.push({r, o});
   updateMeter();
+  renderSteps();
   if (S.hints){ await wait(300); addHint(o); }
   await wait(700);
   if (me) me.querySelector('.read').textContent = '既読';
@@ -735,7 +865,7 @@ function renderReport(){
   }).join('');
 
   const summary = [
-    '【仮交際LINE練習 結果】',
+    '【CodeForMarriage 仮交際LINE練習 結果】',
     `日時：${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`,
     `練習相手（架空）：${S.p.sei} ${S.p.mei}さん`,
     `スコア：${score}点（ランク${rank.k}）　◎${counts[2]} ○${counts[1]} △${counts[0]}`,
@@ -745,43 +875,46 @@ function renderReport(){
     ...S.log.map(({r,o},i) => `${i+1}. ${r.title}　${GRADE[o.g].split(' ')[0]}`)
   ].join('\n');
 
-  $('#reportBody').innerHTML = `
-    <div class="hero">
-      <span class="eyebrow">振り返りレポート</span>
+  $('#reportBody').innerHTML = `<div class="rep-grid"><div class="col">
+    <div class="hero o1">
+      <span class="eyebrow">CodeForMarriage ・ 振り返りレポート</span>
       <h1 style="font-size:26px">${esc(S.p.sei)}さんとの練習結果</h1>
       <p>${d.getMonth()+1}月${d.getDate()}日 ・ ${S.log.length}往復　◎${counts[2]}　○${counts[1]}　△${counts[0]}</p>
     </div>
-    <div class="score-card">
+    <div class="score-card o2">
       <div class="score-num">${score}<small>点</small></div>
       <div><span class="rank"><i>${rank.k}</i>ランク</span><p>${rank.t}</p></div>
     </div>
-    <div class="panel">
+    <div class="panel o3">
       <h2 class="section-title">5つの力 <small>選んだ返信から算出</small></h2>
       <div class="stack" style="gap:12px">${axisRows}</div>
     </div>
-    <div class="panel">
+    <div class="panel o4">
       <h2 class="section-title">好感度の推移 <small>50 → ${S.aff}</small></h2>
       ${spark(S.affHist)}
     </div>
-    <div class="stack" style="gap:10px">
+    <div class="stack o5" style="gap:10px">
       <h2 class="section-title">次に意識すること</h2>
       ${tips}
     </div>
-    <div class="stack" style="gap:10px">
-      <h2 class="section-title">1往復ずつの振り返り <small>△・○には◎の例つき</small></h2>
-      <ol class="review">${review}</ol>
-    </div>
-    <div class="panel">
+    <div class="panel o7">
       <h2 class="section-title">担当カウンセラーに共有</h2>
-      <p class="muted" style="margin:0;font-size:13.5px">結果をコピーして、カウンセラーとのLINEに貼り付けられます。</p>
+      <p class="muted" style="margin:0;font-size:13.5px">結果をコピーして、CodeForMarriage の担当カウンセラーとのLINEに貼り付けられます。</p>
       <button class="btn btn-ghost" id="copyBtn" type="button">結果をコピー</button>
       <textarea id="copyArea" readonly hidden></textarea>
     </div>
-    <div class="actions">
+    <div class="actions o8">
       <button class="btn btn-primary wide" id="againNew" type="button">別のお相手で練習する</button>
       <button class="btn btn-ghost" id="againSame" type="button">同じお相手でもう一度</button>
       <button class="btn btn-ghost" id="toTop" type="button">トップへ</button>
-    </div>`;
+    </div>
+    </div><div class="col">
+    <div class="stack o6" style="gap:10px">
+      <h2 class="section-title">1往復ずつの振り返り <small>△・○には◎の例つき</small></h2>
+      <ol class="review">${review}</ol>
+    </div>
+    </div></div>
+    <footer class="foot">このシミュレーターは、結婚相談所 CodeForMarriage が会員さんのために制作した練習ツールです。<br>© 2026 CodeForMarriage</footer>`;
   show('report');
   $('#reportBody').scrollTop = 0;
 
@@ -805,6 +938,10 @@ function begin(persona){
   $('#headAvatar').textContent = S.p.mei[0];
   $('#headName').textContent = `${S.p.sei} ${S.p.mei}さん`;
   $('#headSub').textContent = `${S.p.age}歳・${S.p.job}・趣味は${S.p.hobby}`;
+  $('#sideAvatar').textContent = S.p.mei[0];
+  $('#sideName').textContent = `${S.p.sei} ${S.p.mei}さん`;
+  $('#sideFacts').innerHTML = [['年齢',S.p.age+'歳'],['お仕事',S.p.job],['趣味',S.p.hobby],['好きな食べ物',S.p.food],['実家',S.p.place]]
+    .map(([k,v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('');
   $('#quitBtn').textContent = 'やめる';
   log().innerHTML = '';
   updateMeter();
@@ -814,6 +951,11 @@ function begin(persona){
 }
 
 $('#startBtn').addEventListener('click', () => begin());
+addEventListener('keydown', e => {
+  if ($('#chat').hidden || e.ctrlKey || e.metaKey || e.altKey || !/^[1-3]$/.test(e.key)) return;
+  const b = document.querySelectorAll('#choices .choice')[+e.key - 1];
+  if (b){ e.preventDefault(); b.click(); }
+});
 $('#quitBtn').addEventListener('click', e => {
   if (!S.quitArmed){
     S.quitArmed = true; e.currentTarget.textContent = '本当にやめる？';
