@@ -177,6 +177,10 @@ button:focus-visible,input:focus-visible+label{outline:3px solid var(--accent);o
 .side{display:none}
 .choice .key{display:none}
 .avatar-lg{width:56px;height:56px;font-size:24px}
+.avatar{overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.peek-row{display:flex;gap:8px;align-items:flex-start}
+.peek-row .peek{max-width:calc(78% - 40px)}
 .profile-top{display:flex;align-items:center;gap:12px}
 .profile-top b{font-family:var(--f-display);font-size:18px;display:block}
 .facts{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0;font-size:13.5px}
@@ -223,6 +227,8 @@ kbd{font-family:var(--f-body);font-size:11px;border:1px solid var(--line);border
   .rep-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:32px;align-items:start}
   .rep-grid .col{display:flex;flex-direction:column;gap:20px;min-width:0}
   .score-num{font-size:68px}
+  .side .avatar-lg{width:88px;height:88px;font-size:34px}
+  .peek-row .avatar{width:44px;height:44px}
 }
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -245,7 +251,7 @@ kbd{font-family:var(--f-body);font-size:11px;border:1px solid var(--line);border
           </div>
 
           <div class="phone-peek o2" aria-hidden="true">
-            <div class="peek them">今日は駅の近くに新しくできたカフェに行ってきました😊 お休みは何してましたか？</div>
+            <div class="peek-row"><span class="avatar"><img src="img/p1-smile.jpg" alt=""></span><div class="peek them">今日は高尾山に登ってきました😊 お休みは何してましたか？</div></div>
             <div class="peek me">いいですね！どんなお店でしたか？私は友人とランチに行ってきました。</div>
             <div class="peek-note"><span class="grade g2">◎ いい返信</span> 反応 → 答える → 質問を返す、の3点セット</div>
           </div>
@@ -337,6 +343,8 @@ kbd{font-family:var(--f-body);font-size:11px;border:1px solid var(--line);border
 
 <script src="analytics.js"></script>
 <script>
+// analytics.js defines track(); keep a no-op so the page still works where it is not loaded.
+window.track = window.track || function(){};
 const AX = {kyokan:'共感・リアクション', shitsumon:'質問・話題づくり', tempo:'長さ・テンポ', hairyo:'配慮・マナー', sekkyoku:'前向きさ・誘い方'};
 const TIPS = {
   kyokan:'相手のメッセージの「気持ち」に一言反応してから自分の話をしましょう。「楽しそう！」「お疲れ様です」「美味しそう！」が会話の入口です。',
@@ -348,21 +356,22 @@ const TIPS = {
 const GRADE = ['△ 気をつけたい','○ もう一歩','◎ いい返信'];
 
 const PERSONAS = {
+  // Same six characters as the お見合い simulator (omiai-sim); img = face set in img/ (normal / smile / trouble).
   f:[
-    {sei:'高橋',mei:'美咲',age:29,job:'看護師',hobby:'カフェ巡り',hobbyAct:'駅の近くに新しくできたカフェに行ってきました',food:'パスタ',place:'横浜'},
-    {sei:'佐々木',mei:'彩',age:31,job:'事務職',hobby:'映画鑑賞',hobbyAct:'話題になってたアニメ映画を観てきました',food:'お寿司',place:'大宮'},
-    {sei:'中村',mei:'由佳',age:27,job:'保育士',hobby:'ヨガ',hobbyAct:'朝ヨガのレッスンに行ってきました',food:'韓国料理',place:'船橋'},
-    {sei:'山本',mei:'千尋',age:33,job:'薬剤師',hobby:'パン屋巡り',hobbyAct:'気になってたパン屋さんに並んで買ってきました',food:'パン',place:'吉祥寺'},
-    {sei:'小林',mei:'遥',age:30,job:'営業事務',hobby:'キャンプ',hobbyAct:'友達とデイキャンプに行ってきました',food:'焼肉',place:'町田'},
-    {sei:'加藤',mei:'真由',age:35,job:'経理',hobby:'料理',hobbyAct:'初めてビーフシチューを作ってみました',food:'和食',place:'川崎'}
+    {img:'p1',sei:'西村',mei:'優花',age:30,job:'歯科衛生士',hobby:'山歩き',hobbyDate:'山歩き',hobbyAct:'高尾山に登ってきました。頂上で食べるおにぎりが最高でした',food:'お寿司',place:'静岡'},
+    {img:'p2',sei:'森',mei:'さやか',age:28,job:'図書館司書',hobby:'読書',hobbyDate:'本屋さん巡り',hobbyAct:'気になってたミステリーを一気に読みました',food:'お蕎麦',place:'長野'},
+    {img:'p3',sei:'斎藤',mei:'恵',age:33,job:'管理栄養士',hobby:'料理',hobbyDate:'料理教室',hobbyAct:'初めて餃子を皮から作ってみました',food:'もつ鍋',place:'福岡'},
+    {img:'p4',sei:'岡田',mei:'葵',age:31,job:'アパレル販売',hobby:'美術館巡り',hobbyDate:'美術館',hobbyAct:'印象派の企画展に行ってきました',food:'牛タン',place:'仙台'},
+    {img:'p5',sei:'吉田',mei:'奈々',age:29,job:'看護師',hobby:'国内旅行',hobbyDate:'日帰りのお出かけ',hobbyAct:'日帰りで鎌倉まで行ってきました',food:'海鮮丼',place:'岡山'},
+    {img:'p6',sei:'井上',mei:'里奈',age:35,job:'経理',hobby:'テニス',hobbyDate:'テニス',hobbyAct:'サークルでテニスを3時間打ってきました',food:'イタリアン',place:'埼玉'}
   ],
   m:[
-    {sei:'田中',mei:'健太',age:32,job:'システムエンジニア',hobby:'ランニング',hobbyAct:'朝から川沿いを10キロ走ってきました',food:'ラーメン',place:'品川'},
-    {sei:'伊藤',mei:'大輔',age:34,job:'営業',hobby:'ゴルフ',hobbyAct:'打ちっぱなしに行ってきました',food:'焼き鳥',place:'浦和'},
-    {sei:'渡辺',mei:'翔',age:29,job:'公務員',hobby:'サッカー観戦',hobbyAct:'スタジアムで試合を観てきました',food:'カレー',place:'横浜'},
-    {sei:'鈴木',mei:'拓也',age:36,job:'メーカー勤務',hobby:'釣り',hobbyAct:'早起きして海釣りに行ってきました',food:'お寿司',place:'千葉'},
-    {sei:'山田',mei:'直樹',age:31,job:'教員',hobby:'読書',hobbyAct:'気になってた小説を一気に読みました',food:'中華',place:'立川'},
-    {sei:'松本',mei:'亮',age:38,job:'設計士',hobby:'カメラ',hobbyAct:'カメラを持って公園を散歩してきました',food:'お蕎麦',place:'鎌倉'}
+    {sei:'田中',mei:'健太',age:32,job:'システムエンジニア',hobby:'ランニング',hobbyDate:'ランニング',hobbyAct:'朝から川沿いを10キロ走ってきました',food:'ラーメン',place:'品川'},
+    {sei:'伊藤',mei:'大輔',age:34,job:'営業',hobby:'ゴルフ',hobbyDate:'打ちっぱなし',hobbyAct:'打ちっぱなしに行ってきました',food:'焼き鳥',place:'浦和'},
+    {sei:'渡辺',mei:'翔',age:29,job:'公務員',hobby:'サッカー観戦',hobbyDate:'サッカー観戦',hobbyAct:'スタジアムで試合を観てきました',food:'カレー',place:'横浜'},
+    {sei:'鈴木',mei:'拓也',age:36,job:'メーカー勤務',hobby:'釣り',hobbyDate:'釣り',hobbyAct:'早起きして海釣りに行ってきました',food:'お寿司',place:'千葉'},
+    {sei:'山田',mei:'直樹',age:31,job:'教員',hobby:'読書',hobbyDate:'本屋さん巡り',hobbyAct:'気になってた小説を一気に読みました',food:'中華',place:'立川'},
+    {sei:'松本',mei:'亮',age:38,job:'設計士',hobby:'カメラ',hobbyDate:'カメラ散歩',hobbyAct:'カメラを持って公園を散歩してきました',food:'お蕎麦',place:'鎌倉'}
   ]
 };
 
@@ -597,9 +606,9 @@ const DATE = [
    {t:'へえ〜。', f:'相手からのサインを見逃しています。誘うチャンスでした。'}],
   re:{good:['ぜひ！土曜のお昼が空いてます😊 楽しみです！'], ok:['いいですね！また予定合わせましょう。'], bad:['あ…そうですね、また考えておきます。']}},
  {title:'デートに誘われたら', ax:['sekkyoku','hairyo'],
-  msg:['この前お話しした{hobby}、今度一緒にどうですか？笑'],
+  msg:['この前お話しした{hobbyDate}、今度一緒にどうですか？笑'],
   good:[
-   {t:'ぜひ行きたいです！初心者ですが大丈夫ですか？😊 来週の土日ならどちらも空いてます！', f:'即答の「行きたい」＋空いている日。相手は安心して計画を進められます。'},
+   {t:'ぜひ行きたいです！色々教えてください😊 来週の土日ならどちらも空いてます！', f:'即答の「行きたい」＋空いている日。相手は安心して計画を進められます。'},
    {t:'嬉しいです！ちょうど興味ありました。日程は{sei}さんのご都合に合わせますので、候補をいただけますか？', f:'嬉しさを伝え、調整にも協力的です。'}],
   ok:[
    {t:'考えておきます。', f:'迷っている印象を与え、相手は不安になります。行く気があるなら即答で。'}],
@@ -687,7 +696,7 @@ function buildSession(gender, hints, persona){
       .map(o => ({...o, t:fill(o.t,p), f:fill(o.f,p), r:fill(o.r,p)}))
   }));
   const now = new Date();
-  return {gender, hints, p, rounds, idx:0, log:[], aff:50, affHist:[50],
+  return {gender, hints, p, rounds, idx:0, log:[], aff:50, face:1, affHist:[50],
           base:new Date(now.getFullYear(), now.getMonth(), now.getDate()),
           day:0, min:rand(19*60+30, 20*60+40), shownDay:-1, quitArmed:false};
 }
@@ -702,8 +711,16 @@ function append(el){ log().appendChild(el); scrollDown(); return el; }
 function div(cls, html){ const d = document.createElement('div'); d.className = cls; d.innerHTML = html; return d; }
 
 function ensureDate(){ if (S.shownDay !== S.day){ S.shownDay = S.day; append(div('date', dateStr())); } }
+// Women use the illustrated face set; the expression follows how the conversation is going.
+const FACES = ['trouble','normal','smile'];
+function face(){ return S.p.img ? `<img src="img/${S.p.img}-${FACES[S.face]}.jpg" alt="">` : esc(S.p.mei[0]); }
+function setFace(g){
+  S.face = g;
+  $('#headAvatar').innerHTML = face();
+  $('#sideAvatar').innerHTML = face();
+}
 function addThem(text){
-  append(div('row them', `<div class="avatar" aria-hidden="true">${esc(S.p.mei[0])}</div><div class="bubble">${esc(text)}</div><div class="meta">${clockStr()}</div>`));
+  append(div('row them', `<div class="avatar" aria-hidden="true">${face()}</div><div class="bubble">${esc(text)}</div><div class="meta">${clockStr()}</div>`));
 }
 function addMe(text){
   return append(div('row me', `<div class="bubble">${esc(text)}</div><div class="meta"><span class="read"></span><br>${clockStr()}</div>`));
@@ -713,7 +730,7 @@ function addHint(o){
   append(div('hint', `<span class="grade g${o.g}">${GRADE[o.g]}</span><span>${esc(o.f)}</span>`));
 }
 async function typing(ms){
-  const t = append(div('row them', `<div class="avatar" aria-hidden="true">${esc(S.p.mei[0])}</div><div class="bubble typing" aria-label="入力中"><i></i><i></i><i></i></div>`));
+  const t = append(div('row them', `<div class="avatar" aria-hidden="true">${face()}</div><div class="bubble typing" aria-label="入力中"><i></i><i></i><i></i></div>`));
   await wait(ms); t.remove();
 }
 function updateMeter(){
@@ -755,6 +772,7 @@ async function playRound(i){
   setDock('wait');
   ensureDate();
   if (r.sit){ await wait(350); addSys(r.sit); }
+  setFace(S.aff >= 65 ? 2 : S.aff < 35 ? 0 : 1);
   if (r.m){ await typing(700 + Math.min(r.m.length*14, 900)); addThem(r.m); }
   await wait(250);
   $('#dockLabel').textContent = r.m ? '返信を選んでください' : '送るメッセージを選んでください';
@@ -786,6 +804,7 @@ async function choose(o){
   await wait(700);
   if (me) me.querySelector('.read').textContent = '既読';
   S.min += rand(1,9);
+  setFace(o.g);
   const reply = o.r || fill(pick(r.re[['bad','ok','good'][o.g]]), S.p);
   await typing(800 + Math.min(reply.length*12, 900));
   addThem(reply);
@@ -835,7 +854,7 @@ function spark(h){
 
 function renderReport(){
   const {score, rank, ax} = calc();
-  track('sim_complete', { sim: 'line', rank: rank, score: score });
+  track('sim_complete', { sim: 'line', rank: rank.k, score: score });
   const counts = [0,0,0]; S.log.forEach(({o}) => counts[o.g]++);
   const ranked = Object.keys(AX).filter(k => ax[k].max).map(k => ({k, r: ax[k].got/ax[k].max})).sort((a,b) => a.r-b.r);
   const weak = ranked.filter(a => a.r < 1).slice(0,2);
@@ -935,10 +954,9 @@ function begin(persona){
   const hints = persona ? S.hints : $('#hints').checked;
   S = buildSession(gender, hints, persona);
   track('sim_start', { sim: 'line', hints: hints ? 1 : 0, retry: persona ? 1 : 0 });
-  $('#headAvatar').textContent = S.p.mei[0];
   $('#headName').textContent = `${S.p.sei} ${S.p.mei}さん`;
   $('#headSub').textContent = `${S.p.age}歳・${S.p.job}・趣味は${S.p.hobby}`;
-  $('#sideAvatar').textContent = S.p.mei[0];
+  setFace(1);
   $('#sideName').textContent = `${S.p.sei} ${S.p.mei}さん`;
   $('#sideFacts').innerHTML = [['年齢',S.p.age+'歳'],['お仕事',S.p.job],['趣味',S.p.hobby],['好きな食べ物',S.p.food],['実家',S.p.place]]
     .map(([k,v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('');
