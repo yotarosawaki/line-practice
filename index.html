@@ -285,6 +285,7 @@ kbd{font-family:var(--f-body);font-size:11px;border:1px solid var(--line);border
           </div>
 
           <p class="notice o6">登場するお相手・会話はすべて練習用の架空のものです。毎回お相手と話題の組み合わせが変わるので、何度でも練習できます。実際の個人名や連絡先は入力しないでください。</p>
+          <p class="notice o6" data-analytics-note hidden>このページでは、利用状況を把握するために Google アナリティクスを使っています。名前などの個人情報は取得しません。</p>
         </div>
       </div>
       <footer class="foot">このシミュレーターは、結婚相談所 Code For Marriage が会員さんのために制作した練習ツールです。<br>© 2026 Code For Marriage</footer>
@@ -334,6 +335,7 @@ kbd{font-family:var(--f-body);font-size:11px;border:1px solid var(--line);border
   </section>
 </div>
 
+<script src="analytics.js"></script>
 <script>
 const AX = {kyokan:'共感・リアクション', shitsumon:'質問・話題づくり', tempo:'長さ・テンポ', hairyo:'配慮・マナー', sekkyoku:'前向きさ・誘い方'};
 const TIPS = {
@@ -833,6 +835,7 @@ function spark(h){
 
 function renderReport(){
   const {score, rank, ax} = calc();
+  track('sim_complete', { sim: 'line', rank: rank, score: score });
   const counts = [0,0,0]; S.log.forEach(({o}) => counts[o.g]++);
   const ranked = Object.keys(AX).filter(k => ax[k].max).map(k => ({k, r: ax[k].got/ax[k].max})).sort((a,b) => a.r-b.r);
   const weak = ranked.filter(a => a.r < 1).slice(0,2);
@@ -931,6 +934,7 @@ function begin(persona){
   const gender = persona ? S.gender : document.querySelector('input[name=gender]:checked').value;
   const hints = persona ? S.hints : $('#hints').checked;
   S = buildSession(gender, hints, persona);
+  track('sim_start', { sim: 'line', hints: hints ? 1 : 0, retry: persona ? 1 : 0 });
   $('#headAvatar').textContent = S.p.mei[0];
   $('#headName').textContent = `${S.p.sei} ${S.p.mei}さん`;
   $('#headSub').textContent = `${S.p.age}歳・${S.p.job}・趣味は${S.p.hobby}`;
@@ -958,6 +962,7 @@ $('#quitBtn').addEventListener('click', e => {
     const armed = S; setTimeout(() => { if (S === armed){ S.quitArmed = false; $('#quitBtn').textContent = 'やめる'; } }, 3000);
     return;
   }
+  track('sim_quit', { sim: 'line' });
   S = null; renderStart();
 });
 
